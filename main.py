@@ -1,30 +1,38 @@
 import pygame
 from sys import exit
 import time
-from gamesupport import import_folder
 #CLASSES
 #PLAYER CLASS
+#-> In this class, The player animation is being handled, Gravity Function is being defined, while also Making the function for the player input. All of those Function are stored inside the Display_Update function, which is then the function is used to called the class functions.
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         Player_standing_1 = pygame.image.load('player/Player1.png').convert_alpha()
         Player_standing_2 = pygame.image.load('player/Player2.png').convert_alpha()
+        #The Player Index is going to be used to shuffled the animation / Images The reason it works #because all of the images have very similiar names and stored. With the only key
+        #differences is the number between each image file, hence if we change the player index, the #image will change. That is because the self.image is based on the Self.Player_standing
+        #list, and the list is based on the self.Player_index.
+
         self.Player_index = 0
         self.Player_standing = [Player_standing_1, Player_standing_2]
         self.Player_jump = pygame.image.load('player/PlayerJUMP.png').convert_alpha()
         self.direction = pygame.math.Vector2(0,0)
-        
  
         self.image = self.Player_standing[self.Player_index]
         self.rect = self.image.get_rect(midbottom = (200, 500))
+        # we set the rectangle, Gravity and the Jumping sound when certain input is 
+        #detected later on
         self.gravity = 0
         self.jump_sound = pygame.mixer.Sound('sound/jump.mp3')
         self.jump_sound.set_volume(0.2)
         
         pass
     def player_input(self):
+        #We check the Player Input, and condition. For Jumping for example,
+        #the player can only jump, when the rectangle position is at the bottom or 500,
+        #Hence stopping an infinite jumping mechanic. 
         keys = pygame.key.get_pressed() 
-        if keys[pygame.K_SPACE] and (self.rect.bottom >= 500) and (gam):
+        if keys[pygame.K_SPACE] and (self.rect.bottom >= 500) and  (canJump):
             self.gravity = -25
             self.jump_sound.play()
         if keys[pygame.K_w]:
@@ -38,9 +46,14 @@ class Player(pygame.sprite.Sprite):
             if self.rect.bottom >= 500:
                 self.gravity = -21
                 self.jump_sound.play()
-
         pass 
     def apply_gravity(self):
+        #Gravity Function, In short, To replicate the gravity, the longer
+        #the player is in the air, the higher the gravity is.
+        #This can be done by keep increasing the self.gravity, but connect
+        #The self.rect.y with the self.gravity.
+        #When The player is on the bottom, we change the gravity
+        #Into 0, to stop the player from falling through the ground.
         self.gravity += 1
         self.rect.y += self.gravity 
         if self.rect.bottom >= 500:
@@ -48,78 +61,50 @@ class Player(pygame.sprite.Sprite):
             self.gravity = 0
 
     def update(self):
+        #Where we call all of the function
         self.player_input()
         self.apply_gravity()
         self.animation_state()
         pass
-    #
-    def import_character_asset(self):
-        character_path = '/'
-        self.animations = {'idle':[],'run':[],'jump':[  ]}
-
-        for animation in self.animations.keys():
-            full_path = character_path + animation
-            self.animations[animation] = import_folder(full_path)
-        pass
     def animation_state(self):
+        #Where the animation is being handled
         if self.rect.bottom < 500:
             self.image = self.Player_jump
-    
         else:
+        #The self.Player_index is being increased by 0.1, which is the speed of the animation
+        
             self.Player_index += 0.1
             if self.Player_index  >= len(self.Player_standing): self.Player_index =0
             self.image = self.Player_standing[int(self.Player_index)%2]
-
-class Obstacles(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.Surface((50, 50))
-        self.image.fill((255, 0, 0))
-        self.rect = self.image.get_rect()
-        self.rect.x = 100
-        self.rect.y = 100
-
-
 class Killer(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.Killer_standing1 = pygame.image.load('killer/killer1.gif').convert_alpha()
-        self.Killer_standing2 = pygame.image.load('killer/killer2.gif').convert_alpha()
-        self.Killer_standing3 = pygame.image.load('killer/killer3.gif').convert_alpha()
-        self.Killer_standing4 = pygame.image.load('killer/killer4.gif').convert_alpha()
-        self.Killer_standing5 = pygame.image.load('killer/killer5.gif').convert_alpha()
-        self.Killer_standing6 = pygame.image.load('killer/killer6.gif').convert_alpha()
-        self.Killer_standing7 = pygame.image.load('killer/killer7.gif').convert_alpha()
-        self.Killer_standing = [self.Killer_standing1, self.Killer_standing2, self.Killer_standing3, self.Killer_standing4, self.Killer_standing5, self.Killer_standing6, self.Killer_standing7]
+        
+        # Load Killer standing images using a loop
+        self.Killer_standing = [pygame.image.load(f'killer/killer{i}.gif').convert_alpha() for i in range(1, 8)]
+        
+        # Initialize Killer index, image, and position
         self.Killer_index = 0
-
         self.image = self.Killer_standing[self.Killer_index]
         self.rect = self.image.get_rect(midbottom=(1200, 505))
 
-
-    def display_update(self,screen):
+    def display_update(self, screen):
+        # Update Killer's animation state and display on the screen
         self.animation_state()
         screen.blit(self.image, (self.rect.x, self.rect.y))
         pygame.display.update()
 
-
-
-
     def animation_state(self):
-        self.Killer_index += 0.1
-        self.image = self.Killer_standing[int(self.Killer_index)%7]
-        if self.Killer_index >= len(self.Killer_standing):
-            self.Killer_index = 0
-
-
-pass
-
+        # Update Killer's animation index and image, and reset if necessary
+        self.Killer_index = (self.Killer_index + 0.1) % len(self.Killer_standing)
+        self.image = self.Killer_standing[int(self.Killer_index)]
 #PLAYER CLASS END
 #CLASSES END
 #FUNCTIONS
 #FUNCTIONS END
 #INITIALIZATIONd
 pygame.init()
+
 screen = pygame.display.set_mode((1500, 900))
 pygame.display.set_caption('Analog Horor 1.2')
 MaximumFrameRate = pygame.time.Clock()
@@ -134,15 +119,15 @@ loudMusic.set_volume(0)
 
 
 
-#GAME HOME SCREEN
+#GAME HOME SCREEN AND SURFACES IMAGE
 custom_cursor = pygame.Surface((32, 32), pygame.SRCALPHA)
 test_font = pygame.font.Font("font/Mangolaine.ttf",50)
 home_screen = pygame.image.load('images/homeScreen3.jpg').convert_alpha()
 title_screen = pygame.image.load('images/title.png').convert_alpha()
 start_surf = test_font.render('Start',False,'Black').convert_alpha()
 start_rect = start_surf.get_rect(center = (200, 700))
-quit_surf = test_font.render('Quit',False,'Black').convert_alpha()
-quit_rect = quit_surf.get_rect(center = (400, 700))
+quit_surf_button = test_font.render('Quit',False,'Black').convert_alpha()
+quit_rect_button = quit_surf_button.get_rect(center = (400, 700))
 back_surf = test_font.render('Back',False,'White').convert_alpha()
 back_rect = back_surf.get_rect(center = (764, 700))
 game_over_font = pygame.font.Font("font/Mangolaine.ttf",200)
@@ -161,17 +146,22 @@ table_rect = table_surf.get_rect(midbottom = (1100,510))
 #GAME HOME SCREEN END
 #MUSIC
 bg_music.play(loops=-1)
-#MUSIC END
+def render_back_button(mouse_pos, back_surf, back_rect):
+    if back_rect.collidepoint(mouse_pos):
+        if pygame.mouse.get_focused():
+            back_surf = test_font.render('Back', False, 'Green').convert_alpha()
+            back_rect = back_surf.get_rect(center=(764, 700))
+            pygame.mouse.set_cursor(*pygame.cursors.diamond)
+        else:
+            back_surf = test_font.render('Back', False, 'White').convert_alpha()
+    else:
+        back_surf = test_font.render('Back', False, 'White').convert_alpha()
 
-#LEVELS
-#LEVEL_1
+    return back_surf, back_rect
 Floor_1 = pygame.image.load('images/ground2.png').convert_alpha()
-
-
 #LEVEL_1 END
 
-#PLAYER
-
+#PLAYER DRAWING
 Player_Gravity = 0
 Player_Speed = 10
 player = Player()
@@ -181,7 +171,7 @@ player_group.draw(screen)
 player_group.update()
 #PLAYER END
 
-#TEXTBOX
+#TEXTBOX surface
 loadingtext = pygame.image.load('textbox/loadingtext.png').convert_alpha()
 text1 = pygame.image.load('textbox/text1.png').convert_alpha()
 text2 = pygame.image.load('textbox/text2.png').convert_alpha()
@@ -212,20 +202,8 @@ text26 = pygame.image.load('textbox/text26.png').convert_alpha()
 text27 = pygame.image.load('textbox/text27.png').convert_alpha()
 text28 = pygame.image.load('textbox/text28.png').convert_alpha()
 text29 = pygame.image.load('textbox/text29.png').convert_alpha()
+#DECISION surface & Rectangle
 
-#Repeatuntil 29
-#DECISIONBOX
-
-
-
-
-#repeat until text25
-#TEXTBOX END
-
-
-
-#TEXTBOX
-#DECISIONBOX
 decision1 = pygame.image.load('textbox/decision1.png').convert_alpha()
 decision2 = pygame.image.load('textbox/decision2.png').convert_alpha()
 decision1_rect = decision1.get_rect(topleft = (130, 400))
@@ -246,14 +224,14 @@ decision8 = pygame.image.load('textbox/decision8.png').convert_alpha()
 decision7_rect = decision7.get_rect(topleft = (300, 200))
 decision8_rect = decision8.get_rect(topleft = (800, 200))
 
-
-
-
+#Color Variable
 white = (255,255,255)
 black = (0,0,0)
 #COLORS END 
 
 #GAMESTATES
+#These Are the game States
+#Their function is to manage the transition between the frames.
 run = True
 game_active = False
 level_1 = False
@@ -261,6 +239,15 @@ level_2 = False
 level_3 = False
 level_4 = False
 level_5 = False
+#These are used to manage the textboxes Surface
+#So in order to display the right Textboxes I use these variable
+#How it works is everytime an Input (SpaceBar) is detected->
+#The For event function from Pygame Will Check these Variables
+#If for example phone_activated is True, It will continue by
+#Making the phone_activated into False while Phone_activated2 into True
+#This Cycle Only happens when our user press the spacebar.
+#The same can be said for downstair_activated
+#The identifiers Explain
 phone_activated = False
 phone_activated2 = False
 phone_activated3 = False
@@ -283,16 +270,22 @@ downstair_activated12 = False
 downstair_activated13 = False
 downstair_activated14 = False
 downstair_activated15 = False
+Introduction = False
+#GAMESTATES
 
-#repeat until 9
+#LOGIC VARIABLE TO KEEP THE GAME RUNNING SMOOTHLY
 
-
-#repeat until 6
+#Phone Hovered for the Telephone Animation when Hovered
+phone_hovered = False
+#Killer_activated is for the condition for the killer to move to the right
+Killer_activated = False
+active = True
+active2 = True
+active3 = True
+canJump = True
 game_over = False
 game_win = False
-MovingRight = False
-Introduction = False
-#GAMESTATES END
+#TextBoxes States
 text_box1 = True
 text_box2 = False
 text_box3 = False
@@ -309,10 +302,10 @@ text_box13 = False
 text_box14 = False
 text_box15 = False
 text_box16 = False
-phone_hovered = False
-Killer_activated = False
+
 #MUSIC END
 #INTRO
+import pygame
 
 class Intro(pygame.sprite.Sprite):
     def __init__(self):
@@ -320,36 +313,35 @@ class Intro(pygame.sprite.Sprite):
         self.Intro_Index = 0
         self.Intro_Images = []
 
-        # Load images
-        Intro_1 = pygame.image.load('Intro/frame1.gif').convert_alpha()
-        Intro_2 = pygame.image.load('Intro/frame2.gif').convert_alpha()
-        Intro_3 = pygame.image.load('Intro/frame3.gif').convert_alpha()
-        Intro_4 = pygame.image.load('Intro/frame4.gif').convert_alpha()
-        Intro_5 = pygame.image.load('Intro/frame5.gif').convert_alpha()
-        Intro_6 = pygame.image.load('Intro/frame6.gif').convert_alpha()
-        Intro_7 = pygame.image.load('Intro/frame7.gif').convert_alpha()
-        Intro_8 = pygame.image.load('Intro/frame8.gif').convert_alpha()
-        Intro_9 = pygame.image.load('Intro/frame9.gif').convert_alpha()
-        Intro_10 = pygame.image.load('Intro/frame10.gif').convert_alpha()
-        Intro_11 = pygame.image.load('Intro/frame11.gif').convert_alpha()
-        Intro_12 = pygame.image.load('Intro/frame12.gif').convert_alpha()
-        Intro_13 = pygame.image.load('Intro/frame13.gif').convert_alpha()
-        Intro_14 = pygame.image.load('Intro/frame14.gif').convert_alpha()
-        Intro_15 = pygame.image.load('Intro/frame15.gif').convert_alpha()
-        Intro_16 = pygame.image.load('Intro/frame16.gif').convert_alpha()
-        Intro_17 = pygame.image.load('Intro/frame17.gif').convert_alpha()
-        Intro_18 = pygame.image.load('Intro/frame18.gif').convert_alpha()
-        Intro_19 = pygame.image.load('Intro/frame19.gif').convert_alpha()
-        Intro_20 = pygame.image.load('Intro/frame20.gif').convert_alpha()
-        Intro_21 = pygame.image.load('Intro/frame22.gif').convert_alpha()
-        Intro_23 = pygame.image.load('Intro/frame23.gif').convert_alpha()
-        Intro_24 = pygame.image.load('Intro/frame24.gif').convert_alpha()
-        Intro_25 = pygame.image.load('Intro/frame25.gif').convert_alpha()
-        Intro_26 = pygame.image.load('Intro/frame26.gif').convert_alpha()
-        Intro_27 = pygame.image.load('Intro/frame27.gif').convert_alpha()
-        Intro_28 = pygame.image.load('Intro/frame28.gif').convert_alpha()
+        Introduction_Frame1 = pygame.image.load('Intro/frame1.gif').convert_alpha()
+        Introduction_Frame2 = pygame.image.load('Intro/frame2.gif').convert_alpha()
+        Introduction_Frame3 = pygame.image.load('Intro/frame3.gif').convert_alpha()
+        Introduction_Frame4 = pygame.image.load('Intro/frame4.gif').convert_alpha()
+        Introduction_Frame5 = pygame.image.load('Intro/frame5.gif').convert_alpha()
+        Introduction_Frame6 = pygame.image.load('Intro/frame6.gif').convert_alpha()
+        Introduction_Frame7 = pygame.image.load('Intro/frame7.gif').convert_alpha()
+        Introduction_Frame8 = pygame.image.load('Intro/frame8.gif').convert_alpha()
+        Introduction_Frame9 = pygame.image.load('Intro/frame9.gif').convert_alpha()
+        Introduction_Frame10 = pygame.image.load('Intro/frame10.gif').convert_alpha()
+        Introduction_Frame11 = pygame.image.load('Intro/frame11.gif').convert_alpha()
+        Introduction_Frame12 = pygame.image.load('Intro/frame12.gif').convert_alpha()
+        Introduction_Frame13 = pygame.image.load('Intro/frame13.gif').convert_alpha()
+        Introduction_Frame14 = pygame.image.load('Intro/frame14.gif').convert_alpha()
+        Introduction_Frame15 = pygame.image.load('Intro/frame15.gif').convert_alpha()
+        Introduction_Frame16 = pygame.image.load('Intro/frame16.gif').convert_alpha()
+        Introduction_Frame17 = pygame.image.load('Intro/frame17.gif').convert_alpha()
+        Introduction_Frame18 = pygame.image.load('Intro/frame18.gif').convert_alpha()
+        Introduction_Frame19 = pygame.image.load('Intro/frame19.gif').convert_alpha()
+        Introduction_Frame20 = pygame.image.load('Intro/frame20.gif').convert_alpha()
+        Introduction_Frame21 = pygame.image.load('Intro/frame22.gif').convert_alpha()
+        Introduction_Frame23 = pygame.image.load('Intro/frame23.gif').convert_alpha()
+        Introduction_Frame24 = pygame.image.load('Intro/frame24.gif').convert_alpha()
+        Introduction_Frame25 = pygame.image.load('Intro/frame25.gif').convert_alpha()
+        Introduction_Frame26 = pygame.image.load('Intro/frame26.gif').convert_alpha()
+        Introduction_Frame27 = pygame.image.load('Intro/frame27.gif').convert_alpha()
+        Introduction_Frame28 = pygame.image.load('Intro/frame28.gif').convert_alpha()
 
-        self.Intro_Images = [Intro_1, Intro_2, Intro_3, Intro_4, Intro_5, Intro_6, Intro_7, Intro_8, Intro_9, Intro_10, Intro_11, Intro_12, Intro_13, Intro_14, Intro_15, Intro_16, Intro_17, Intro_18, Intro_19, Intro_20, Intro_21, Intro_23, Intro_24, Intro_25, Intro_26, Intro_27, Intro_28]
+        self.Intro_Images = [Introduction_Frame1, Introduction_Frame2, Introduction_Frame3, Introduction_Frame4, Introduction_Frame5, Introduction_Frame6, Introduction_Frame7, Introduction_Frame8, Introduction_Frame9, Introduction_Frame10, Introduction_Frame11, Introduction_Frame12, Introduction_Frame13, Introduction_Frame14, Introduction_Frame15, Introduction_Frame16, Introduction_Frame17, Introduction_Frame18, Introduction_Frame19, Introduction_Frame20, Introduction_Frame21, Introduction_Frame23, Introduction_Frame24, Introduction_Frame25, Introduction_Frame26, Introduction_Frame27, Introduction_Frame28]
         self.Intro_image = self.Intro_Images[self.Intro_Index]
 
     def animation_state_intro(self):
@@ -367,6 +359,7 @@ class Intro(pygame.sprite.Sprite):
         screen.blit(self.Intro_image, (-400, 0))
 
         # Update the display
+
         pygame.display.update()
 
 # Example usage:
@@ -378,9 +371,7 @@ killer = Killer()
 firstCount = 0
 phone_rect = phone_surf.get_rect(midbottom=(1100, 430))
 hover_phone_rect = hover_phone.get_rect(bottomleft=phone_rect.bottomleft)
-active = True
-active2 = True
-active3 = True
+
 #
 
 
@@ -406,7 +397,7 @@ while True:
                 run = False
                 print(run, game_active)
                 bg_music.stop() 
-            elif quit_rect.collidepoint((event.pos)) and run:
+            elif quit_rect_button.collidepoint((event.pos)) and run:
                 time.sleep(0.1)
                 pygame.quit()
                 exit()
@@ -416,8 +407,21 @@ while True:
                 text_box15 = False
                 phone_activated7 = False
                 downstair_activated6 = False
+                downstair_activated7 = False
+                downstair_activated8 = False
+                downstair_activated9 = False
+                downstair_activated10 = False
+                downstair_activated11 = False
+                downstair_activated12 = False
+                downstair_activated13 = False
+                downstair_activated14 = False
+                downstair_activated15 = False
+                level_4 = False
+                level_5 = False
                 text_box1 = True
                 active = True
+                canJump = True
+
 
             elif phone_rect.collidepoint((event.pos)) and level_1:
                 if active:
@@ -557,11 +561,13 @@ while True:
                     phone_activated = False
                     phone_activated2 = False
                     active = True
+                    canJump = True
                     player.rect.x = 1000
                     # Add your logic here
                 elif decision4_rect.collidepoint(pygame.mouse.get_pos()) and phone_activated2:
                     phone_activated3 = True
                     phone_activated2 = False
+                    canJump = False
                 elif decision5_rect.collidepoint(pygame.mouse.get_pos()) and downstair_activated2:
                     downstair_activated7 = True
                     downstair_activated2 = False
@@ -594,7 +600,7 @@ while True:
         screen.blit(title_screen, (130, 50))
         pygame.draw.rect(screen, white, (128, 650, 160, 100),border_radius=10)
         pygame.draw.rect(screen, white, (325, 650, 160, 100),border_radius=10)
-        screen.blit(quit_surf,quit_rect)
+        screen.blit(quit_surf_button, quit_rect_button)
         mouse_pos = pygame.mouse.get_pos()
         if start_rect.collidepoint((mouse_pos)):
             if pygame.mouse.get_focused():
@@ -605,24 +611,22 @@ while True:
             else:
                 start_surf = test_font.render('Start',False,'Black').convert_alpha()
                 
-        elif quit_rect.collidepoint((mouse_pos)):
+        elif quit_rect_button.collidepoint((mouse_pos)):
             if pygame.mouse.get_focused():
-                quit_surf = test_font.render('Quit',False,'Orange').convert_alpha() 
-                quit_rect = quit_surf.get_rect(center = (400, 700))
+                quit_surf_button = test_font.render('Quit',False,'Orange').convert_alpha() 
+                quit_rect_button = quit_surf_button.get_rect(center = (400, 700))
                 pygame.mouse.set_cursor(*pygame.cursors.diamond)
             else: 
-                quit_surf = test_font.render('Quit',False,'Black').convert_alpha()
+                quit_surf_button = test_font.render('Quit',False,'Black').convert_alpha()
         else:
             if pygame.mouse.get_focused():
                 start_surf = test_font.render('Start',False,'Black').convert_alpha()
-                quit_surf = test_font.render('Quit',False,'Black').convert_alpha()
+                quit_surf_button = test_font.render('Quit',False,'Black').convert_alpha()
                 pygame.mouse.set_cursor(*pygame.cursors.arrow)
         pygame.draw.rect(screen, 'White', start_rect, 100, 10)
         screen.blit(start_surf,start_rect)
-
-
     elif game_active:
-        Intro_duration = 1
+        Intro_duration = 300
         start_time = pygame.time.get_ticks()
         intro_sprite.display_update(screen)
         snow_music.play(loops=0)
@@ -633,9 +637,6 @@ while True:
                 Introduction = True
                 snow_music.stop()
                 game_active = False
-
-# ... (previous code)
-
     elif Introduction:
         screen.fill('Black')
         aKey = pygame.key.get_pressed()
@@ -690,17 +691,12 @@ while True:
             screen.blit(back_surf, back_rect)
         elif text_box16:
             screen.blit(text12, (280, 400))
-
-
-
-
     elif level_1:
         screen.fill('Black')
         active2 = True
         screen.blit(Floor_1, (0, 500))
         screen.blit(bed_surface, bed_rect)
         screen.blit(table_surf,table_rect)
-
         mouse_posX = pygame.mouse.get_pos()
         if active:
             if phone_hovered:
@@ -718,6 +714,7 @@ while True:
         if player.rect.x >= 1350:
             player.rect.x = 1350
         if phone_activated:
+            canJump = False
             screen.fill('Black')
             screen.blit(text13, (280, 400))
         elif phone_activated2:
@@ -765,15 +762,9 @@ while True:
             screen.blit(text22, (280, 400))
         elif downstair_activated6:
             mouse_posx2 = pygame.mouse.get_pos()
-            if back_rect.collidepoint(mouse_posx2):
-                if pygame.mouse.get_focused():
-                    back_surf = test_font.render('Back', False, 'Red').convert_alpha()
-                    back_rect = back_surf.get_rect(center=(764, 700))
-                    pygame.mouse.set_cursor(*pygame.cursors.diamond)
-                else:
-                    back_surf = test_font.render('Back', False, 'White').convert_alpha()
-            else:
-                back_surf = test_font.render('Back', False, 'White').convert_alpha()
+            back_surf, back_rect = render_back_button(mouse_posx2, back_surf, back_rect)
+            screen.blit(game_over_surf, (630, (screen.get_height() / 2) - 20 ))
+            screen.blit(back_surf, back_rect)
                 #draw the back rect
             #position the game over surf in the middle
             screen.blit(game_over_surf, (630, (screen.get_height() / 2) - 20 ))
@@ -805,16 +796,12 @@ while True:
             player.rect.x = 200
             downstair_activated10 = True
             Killer_activated = False
-
         if killer.rect.x <= 0:
             level_5 = True
             level_3 = False
             downstair_activated12 = True
             player.rect.x = 200
             Killer_activated = False
-
-
-        
     elif level_4:
         screen.fill('Black')
         if downstair_activated10:
@@ -822,16 +809,8 @@ while True:
         elif downstair_activated11:
             screen.blit(text29, (280, 400))
         elif downstair_activated15:
-            mouse_pos = pygame.mouse.get_pos()
-            if back_rect.collidepoint(mouse_pos):
-                if pygame.mouse.get_focused():
-                    back_surf = test_font.render('Back', False, 'Green').convert_alpha()
-                    back_rect = back_surf.get_rect(center=(764, 700))
-                    pygame.mouse.set_cursor(*pygame.cursors.diamond)
-                else:
-                    back_surf = test_font.render('Back', False, 'White').convert_alpha()
-            else:
-                back_surf = test_font.render('Back', False, 'White').convert_alpha()
+            mouse_posx2 = pygame.mouse.get_pos()
+            back_surf, back_rect = render_back_button(mouse_posx2, back_surf, back_rect)
             screen.blit(game_over_surf, (630, (screen.get_height() / 2) - 20 ))
             screen.blit(back_surf, back_rect)
     elif level_5:
@@ -842,16 +821,8 @@ while True:
             screen.blit(text27, (280, 400))
             mouse_posx2 = pygame.mouse.get_pos()
         elif downstair_activated14:
-            mouse_pos = pygame.mouse.get_pos()
-            if back_rect.collidepoint(mouse_pos):
-                if pygame.mouse.get_focused():
-                    back_surf = test_font.render('Back', False, 'Green').convert_alpha()
-                    back_rect = back_surf.get_rect(center=(764, 700))
-                    pygame.mouse.set_cursor(*pygame.cursors.diamond)
-                else:
-                    back_surf = test_font.render('Back', False, 'White').convert_alpha()
-            else:
-                back_surf = test_font.render('Back', False, 'White').convert_alpha()
+            mouse_posx2 = pygame.mouse.get_pos()
+            back_surf, back_rect = render_back_button(mouse_posx2, back_surf, back_rect)
             screen.blit(You_Win_surf, (630, (screen.get_height() / 2) - 20 ))
             screen.blit(back_surf, back_rect)
     pygame.display.update()
