@@ -109,13 +109,13 @@ screen = pygame.display.set_mode((1500, 900))
 pygame.display.set_caption('Analog Horor 1.2')
 MaximumFrameRate = pygame.time.Clock()
 bg_music = pygame.mixer.Sound('sound/scaryAudio.mp3')
-bg_music.set_volume(0.3)
+bg_music.set_volume(0.5)
 snow_music = pygame.mixer.Sound('sound/Snow.mp3')
 snow_music.set_volume(0.3)
 scary_music_intro = pygame.mixer.Sound('sound/scaryIntro.mp3')
 scary_music_intro.set_volume(0.3)
 loudMusic = pygame.mixer.Sound('sound/LoudNoise.mp3')
-loudMusic.set_volume(0.3)
+loudMusic.set_volume(0.08)
 breathing_sound = pygame.mixer.Sound('sound/Breathing.mp3')
 breathing_sound.set_volume(0.6)
 killer_revealed_sound = pygame.mixer.Sound('sound/killerReveal.mp3')
@@ -140,6 +140,8 @@ back_surf = test_font.render('Back',False,'White').convert_alpha()
 back_rect = back_surf.get_rect(center = (764, 700))
 game_over_font = pygame.font.Font("font/Mangolaine.ttf",200)
 game_over_surf = test_font.render('GAMEOVER!',False,'Red').convert_alpha()
+game_tutorial_font = pygame.font.Font("font/Mangolaine.ttf",70)
+game_tutorial_surf = game_tutorial_font.render('Press Space to Continue',False,'White').convert_alpha()
 You_Win_surf = test_font.render('GOOD ENDING', False, 'Green').convert_alpha()
 bed_surface = pygame.image.load('images/bed.png').convert_alpha()
 bed_rect = bed_surface.get_rect(midbottom = (200,500))
@@ -399,6 +401,7 @@ while True:
                 exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             if start_rect.collidepoint((event.pos)) and run:
+                scary_music_intro.play()
                 time.sleep(1)
                 game_active = True
                 run = False
@@ -584,10 +587,10 @@ while True:
                 elif decision6_rect.collidepoint(pygame.mouse.get_pos()) and downstair_activated2:
                     downstair_activated3 = True
                     downstair_activated2 = False
-                elif decision7_rect.collidepoint(pygame.mouse.get_pos()) and active2:
+                elif decision7_rect.collidepoint(pygame.mouse.get_pos()) and active2 and player.rect.x >= 1200:
                     print('1')
                     player.rect.x = 300
-                elif decision8_rect.collidepoint(pygame.mouse.get_pos()) and active2:
+                elif decision8_rect.collidepoint(pygame.mouse.get_pos()) and active2 and player.rect.x >= 1200:
                     print('2') 
                     level_1 = False
                     level_2 = True
@@ -648,6 +651,7 @@ while True:
         screen.fill('Black')
         aKey = pygame.key.get_pressed()
         if text_box1:
+            screen.blit(game_tutorial_surf, (430, 250))
             screen.blit(text1, (280, 400))
         elif text_box2:
             screen.blit(text2, (280, 400))
