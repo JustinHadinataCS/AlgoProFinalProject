@@ -109,13 +109,21 @@ screen = pygame.display.set_mode((1500, 900))
 pygame.display.set_caption('Analog Horor 1.2')
 MaximumFrameRate = pygame.time.Clock()
 bg_music = pygame.mixer.Sound('sound/scaryAudio.mp3')
-bg_music.set_volume(0)
+bg_music.set_volume(0.3)
 snow_music = pygame.mixer.Sound('sound/Snow.mp3')
-snow_music.set_volume(0)
+snow_music.set_volume(0.3)
 scary_music_intro = pygame.mixer.Sound('sound/scaryIntro.mp3')
-scary_music_intro.set_volume(0)
+scary_music_intro.set_volume(0.3)
 loudMusic = pygame.mixer.Sound('sound/LoudNoise.mp3')
-loudMusic.set_volume(0)
+loudMusic.set_volume(0.3)
+breathing_sound = pygame.mixer.Sound('sound/Breathing.mp3')
+breathing_sound.set_volume(0.6)
+killer_revealed_sound = pygame.mixer.Sound('sound/killerReveal.mp3')
+killer_revealed_sound.set_volume(0.6)
+
+
+bg_music.play(loops=-1)
+
 
 
 
@@ -145,7 +153,6 @@ table_rect = table_surf.get_rect(midbottom = (1100,510))
 #MUSIC
 #GAME HOME SCREEN END
 #MUSIC
-bg_music.play(loops=-1)
 def render_back_button(mouse_pos, back_surf, back_rect):
     if back_rect.collidepoint(mouse_pos):
         if pygame.mouse.get_focused():
@@ -661,14 +668,17 @@ while True:
         elif text_box8:
             screen.blit(loadingtext, (280, 400))
         elif text_box9:
+            breathing_sound.play(loops=1)
             screen.blit(text7, (280, 400))
         elif text_box10:
+            breathing_sound.stop()
+            killer_revealed_sound.play(loops=0)
             screen.blit(killer_screen_surface,(170,100))
         elif text_box11:
             screen.blit(killer_screen_surface,(170,100))
-            screen.blit(text9, (280, 400))
+            screen.blit(loadingtext, (280, 400))
         elif text_box12:
-            screen.blit(text8, (280, 400))
+            screen.blit(text9, (280, 400))
         elif text_box13:
             screen.blit(text10, (280, 400))
         elif text_box14:
