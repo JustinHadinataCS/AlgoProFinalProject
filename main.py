@@ -16,7 +16,6 @@ class Player(pygame.sprite.Sprite):
         self.Player_index = 0
         self.Player_standing = [Player_standing_1, Player_standing_2]
         self.Player_jump = pygame.image.load('player/PlayerJUMP.png').convert_alpha()
-        self.direction = pygame.math.Vector2(0,0)
  
         self.image = self.Player_standing[self.Player_index]
         self.rect = self.image.get_rect(midbottom = (200, 500))
@@ -25,7 +24,6 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0
         self.jump_sound = pygame.mixer.Sound('sound/jump.mp3')
         self.jump_sound.set_volume(0.2)
-        
         pass
     def player_input(self):
         #We check the Player Input, and condition. For Jumping for example,
@@ -72,7 +70,7 @@ class Player(pygame.sprite.Sprite):
             self.image = self.Player_jump
         else:
         #The self.Player_index is being increased by 0.1, which is the speed of the animation
-        
+            
             self.Player_index += 0.1
             if self.Player_index  >= len(self.Player_standing): self.Player_index =0
             self.image = self.Player_standing[int(self.Player_index)%2]
@@ -98,6 +96,24 @@ class Killer(pygame.sprite.Sprite):
         # Update Killer's animation index and image, and reset if necessary
         self.Killer_index = (self.Killer_index + 0.1) % len(self.Killer_standing)
         self.image = self.Killer_standing[int(self.Killer_index)]
+class Intro(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()        
+        self.Intro_Index = 0
+        self.Intro_Images = [pygame.image.load(f'Intro/frame{i}.gif').convert_alpha() for i in range(1, 29)]
+        self.Intro_image = self.Intro_Images[self.Intro_Index]
+
+    def animation_state_intro(self):
+        self.Intro_Index += 0.1
+        if self.Intro_Index >= len(self.Intro_Images):
+            self.Intro_Index = 0
+        self.Intro_image = self.Intro_Images[int(self.Intro_Index) % 28]
+
+    def display_update(self, screen):
+        self.animation_state_intro()
+        screen.blit(self.Intro_image, (-400, 0))
+        pygame.display.update()
+
 #PLAYER CLASS END
 #CLASSES END
 #FUNCTIONS
@@ -120,15 +136,12 @@ breathing_sound = pygame.mixer.Sound('sound/Breathing.mp3')
 breathing_sound.set_volume(0.6)
 killer_revealed_sound = pygame.mixer.Sound('sound/killerReveal.mp3')
 killer_revealed_sound.set_volume(0.6)
-
-
 bg_music.play(loops=-1)
 
 
 
 
-#GAME HOME SCREEN AND SURFACES IMAGE
-custom_cursor = pygame.Surface((32, 32), pygame.SRCALPHA)
+#GAME HOME SCREEN AND SURFACES IMAGE 
 test_font = pygame.font.Font("font/Mangolaine.ttf",50)
 home_screen = pygame.image.load('images/homeScreen3.jpg').convert_alpha()
 title_screen = pygame.image.load('images/title.png').convert_alpha()
@@ -168,11 +181,7 @@ def render_back_button(mouse_pos, back_surf, back_rect):
 
     return back_surf, back_rect
 Floor_1 = pygame.image.load('images/ground2.png').convert_alpha()
-#LEVEL_1 END
-
-#PLAYER DRAWING
 Player_Gravity = 0
-Player_Speed = 10
 player = Player()
 player_group = pygame.sprite.GroupSingle()
 player_group.add(player)
@@ -212,7 +221,6 @@ text27 = pygame.image.load('textbox/text27.png').convert_alpha()
 text28 = pygame.image.load('textbox/text28.png').convert_alpha()
 text29 = pygame.image.load('textbox/text29.png').convert_alpha()
 #DECISION surface & Rectangle
-
 decision1 = pygame.image.load('textbox/decision1.png').convert_alpha()
 decision2 = pygame.image.load('textbox/decision2.png').convert_alpha()
 decision1_rect = decision1.get_rect(topleft = (130, 400))
@@ -281,9 +289,7 @@ downstair_activated14 = False
 downstair_activated15 = False
 Introduction = False
 #GAMESTATES
-
 #LOGIC VARIABLE TO KEEP THE GAME RUNNING SMOOTHLY
-
 #Phone Hovered for the Telephone Animation when Hovered
 phone_hovered = False
 #Killer_activated is for the condition for the killer to move to the right
@@ -314,62 +320,7 @@ text_box16 = False
 
 #MUSIC END
 #INTRO
-import pygame
 
-class Intro(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()        
-        self.Intro_Index = 0
-        self.Intro_Images = []
-
-        Introduction_Frame1 = pygame.image.load('Intro/frame1.gif').convert_alpha()
-        Introduction_Frame2 = pygame.image.load('Intro/frame2.gif').convert_alpha()
-        Introduction_Frame3 = pygame.image.load('Intro/frame3.gif').convert_alpha()
-        Introduction_Frame4 = pygame.image.load('Intro/frame4.gif').convert_alpha()
-        Introduction_Frame5 = pygame.image.load('Intro/frame5.gif').convert_alpha()
-        Introduction_Frame6 = pygame.image.load('Intro/frame6.gif').convert_alpha()
-        Introduction_Frame7 = pygame.image.load('Intro/frame7.gif').convert_alpha()
-        Introduction_Frame8 = pygame.image.load('Intro/frame8.gif').convert_alpha()
-        Introduction_Frame9 = pygame.image.load('Intro/frame9.gif').convert_alpha()
-        Introduction_Frame10 = pygame.image.load('Intro/frame10.gif').convert_alpha()
-        Introduction_Frame11 = pygame.image.load('Intro/frame11.gif').convert_alpha()
-        Introduction_Frame12 = pygame.image.load('Intro/frame12.gif').convert_alpha()
-        Introduction_Frame13 = pygame.image.load('Intro/frame13.gif').convert_alpha()
-        Introduction_Frame14 = pygame.image.load('Intro/frame14.gif').convert_alpha()
-        Introduction_Frame15 = pygame.image.load('Intro/frame15.gif').convert_alpha()
-        Introduction_Frame16 = pygame.image.load('Intro/frame16.gif').convert_alpha()
-        Introduction_Frame17 = pygame.image.load('Intro/frame17.gif').convert_alpha()
-        Introduction_Frame18 = pygame.image.load('Intro/frame18.gif').convert_alpha()
-        Introduction_Frame19 = pygame.image.load('Intro/frame19.gif').convert_alpha()
-        Introduction_Frame20 = pygame.image.load('Intro/frame20.gif').convert_alpha()
-        Introduction_Frame21 = pygame.image.load('Intro/frame22.gif').convert_alpha()
-        Introduction_Frame23 = pygame.image.load('Intro/frame23.gif').convert_alpha()
-        Introduction_Frame24 = pygame.image.load('Intro/frame24.gif').convert_alpha()
-        Introduction_Frame25 = pygame.image.load('Intro/frame25.gif').convert_alpha()
-        Introduction_Frame26 = pygame.image.load('Intro/frame26.gif').convert_alpha()
-        Introduction_Frame27 = pygame.image.load('Intro/frame27.gif').convert_alpha()
-        Introduction_Frame28 = pygame.image.load('Intro/frame28.gif').convert_alpha()
-
-        self.Intro_Images = [Introduction_Frame1, Introduction_Frame2, Introduction_Frame3, Introduction_Frame4, Introduction_Frame5, Introduction_Frame6, Introduction_Frame7, Introduction_Frame8, Introduction_Frame9, Introduction_Frame10, Introduction_Frame11, Introduction_Frame12, Introduction_Frame13, Introduction_Frame14, Introduction_Frame15, Introduction_Frame16, Introduction_Frame17, Introduction_Frame18, Introduction_Frame19, Introduction_Frame20, Introduction_Frame21, Introduction_Frame23, Introduction_Frame24, Introduction_Frame25, Introduction_Frame26, Introduction_Frame27, Introduction_Frame28]
-        self.Intro_image = self.Intro_Images[self.Intro_Index]
-
-    def animation_state_intro(self):
-        self.Intro_Index += 0.1
-        #print("Intro_Index:", self.Intro_Index)  # Add this line for debugging
-        if self.Intro_Index >= len(self.Intro_Images):
-            self.Intro_Index = 0
-        self.Intro_image = self.Intro_Images[int(self.Intro_Index) % 28]
-
-    def display_update(self, screen):
-        # Update the introduction animation state
-        self.animation_state_intro()
-
-        # Blit the current image onto the screen
-        screen.blit(self.Intro_image, (-400, 0))
-
-        # Update the display
-
-        pygame.display.update()
 
 # Example usage:
 # intro_sprite = Intro()
@@ -381,16 +332,10 @@ firstCount = 0
 phone_rect = phone_surf.get_rect(midbottom=(1100, 430))
 hover_phone_rect = hover_phone.get_rect(bottomleft=phone_rect.bottomleft)
 
-#
-
-
 #INTRO END
-
 #INTRO
-
 #GAME LOOP
 while True:
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -431,7 +376,6 @@ while True:
                 text_box1 = True
                 active = True
                 canJump = True
-
 
             elif phone_rect.collidepoint((event.pos)) and level_1:
                 if active:
