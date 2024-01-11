@@ -1,5 +1,5 @@
 A Short VSNovel with 2D Side-Scrolling gameplay.
-Video Demo -> https://youtu.be/9Ht-A576hNw
+Video Demo -> https://youtu.be/QuW9XCgMUNE
 
 Explore:
 <img width="960" alt="image" src="https://github.com/JustinHadinataCS/AlgoProFinalProject/assets/151802143/bd9c3ae8-f12a-474f-be3a-1efc22124172">
